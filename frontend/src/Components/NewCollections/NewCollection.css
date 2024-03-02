@@ -1,9 +1,9 @@
 .new-collections{
     display:flex;
     flex-direction:column;
-    gap:10px;
+    gap:20px;
     align-items: center;
-    height: 90vh;
+    margin-bottom:100px;
 }
 .new-collections h1{
     color: #171717;
