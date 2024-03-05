@@ -1,5 +1,6 @@
 import React, {createContext, useState} from "react";
 import all_product from "../Components/Assets/all_product";
+import CartItems from "../Components/CartItems/CartItems";
 
 export const ShopContext = createContext(null);
 
@@ -41,7 +42,22 @@ const ShopContextProvider = (props) => {
 
     }
 
-    const contextValue = {getTotalCartAmount, all_product, cartItems, addToCart, removeFromCart, };
+
+    //This function will allow us to count the number of items in the cart
+    //Then we are going to asign the variable to the cart in the navbar
+
+    const getTotalCartItems = () => {
+        let totalItems = 0;
+        for(const item in cartItems){
+            if(cartItems[item] > 0){
+                totalItems += cartItems[item];
+            }
+        }
+        return totalItems;
+    }
+
+
+    const contextValue = {getTotalCartAmount, getTotalCartItems, all_product, cartItems, addToCart, removeFromCart, };
 
     return(
         <ShopContext.Provider value={contextValue}>
