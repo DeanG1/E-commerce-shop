@@ -68,56 +68,81 @@ const Product = mongoose.model("Product", {
     type: String,
     required: true,
   },
-  image:{
-    type:String,
+  image: {
+    type: String,
     required: true,
   },
-  category:{
-    type:String,
-    required:true,
+  category: {
+    type: String,
+    required: true,
   },
-  new_price:{
-    type:Number,
-    required:true,
+  new_price: {
+    type: Number,
+    required: true,
   },
-  old_price:{
-    type:Number,
-    required:true,
+  old_price: {
+    type: Number,
+    required: true,
   },
-  date:{
-    type:Date,
-    default:Date.now,
+  date: {
+    type: Date,
+    default: Date.now,
   },
-  avaliable:{
-    type:Boolean,
-    default:true,
+  avaliable: {
+    type: Boolean,
+    default: true,
   },
 });
 
 //API for Adding Products
-app.post('/addproduct',async (req,res) => {
-    //Create a new product
-    const product = new Product({
-        id:req.body.id,
-        name:req.body.name,
-        image:req.body.image,
-        category:req.body.category,
-        new_price:req.body.new_price,
-        old_price:req.body.old_price,
-        date:req.body.date,
-        avaliable:req.body.avaliable,
-    });
-    console.log(product);
-    //Save the product in the database
-    await product.save();
-    console.log("Saved");
-    //Send the response
-    res.json({
-        success:true,
-        name:req.body.name,
-    })
-})
+app.post("/addproduct", async (req, res) => {
+  let products = await Product.find({});
+  let id;
+  //Get the last product
+  if (products.length > 0) {
+    let last_product_array = products.slice(-1);
+    let last_product = last_product_array[0];
+    //Get the id of the last product
+    //Add 1 to the id
+    //Set the id of the last product
+    id = last_product.id + 1;
+  } else {
+    id = 1;
+  }
+  //Create a new product
+  const product = new Product({
+    id: id,
+    name: req.body.name,
+    image: req.body.image,
+    category: req.body.category,
+    new_price: req.body.new_price,
+    old_price: req.body.old_price,
+    date: req.body.date,
+    avaliable: req.body.avaliable,
+  });
+  console.log(product);
+  //Save the product in the database
+  await product.save();
+  console.log("Saved");
+  //Send the response
+  res.json({
+    success: true,
+    name: req.body.name,
+  });
+});
 
+// Creating API For DELETING PRODUCTS
+
+app.post("/removeproduct", async (req, res) => {
+  //Delete the product
+  await Product.findOneAndDelete({ id: req.body.id });
+  console.log("Removed");
+  //Send the response
+  res.json({
+    success: true,
+    name: req.body.name,
+  });
+});
 
 app.listen(port, (error) => {
   if (!error) {
