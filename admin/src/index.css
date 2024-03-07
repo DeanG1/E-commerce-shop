@@ -1,4 +1,6 @@
 body{
   margin:0;
   font-family: "Quicksand", sans-serif;
+  background: #f6f6f6;
+  height: 100vh;
 }
