@@ -94,7 +94,7 @@ const Product = mongoose.model("Product", {
   },
 });
 
-//API for Adding Products
+// Creating API For CREATING PRODUCTS
 app.post("/addproduct", async (req, res) => {
   let products = await Product.find({});
   let id;
@@ -108,7 +108,7 @@ app.post("/addproduct", async (req, res) => {
     id = last_product.id + 1;
   } else {
     id = 1;
-  }
+  } 
   //Create a new product
   const product = new Product({
     id: id,
@@ -143,6 +143,14 @@ app.post("/removeproduct", async (req, res) => {
     name: req.body.name,
   });
 });
+
+// Creating API for getting all products
+app.get('/allproducts', async (req,res) => {
+  let products = await Product.find({});
+  console.log("All products fetched!");
+  res.send(products);
+})
+
 
 app.listen(port, (error) => {
   if (!error) {
