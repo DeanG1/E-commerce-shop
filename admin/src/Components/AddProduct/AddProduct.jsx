@@ -1,6 +1,7 @@
 import React,{useState} from "react";
 import "./AddProduct.css";
 import upload_area from "../../assets/upload_area.svg";
+import axios from 'axios';
 const AddProduct = () => {
   
   const [image,setImage] = useState(false)
@@ -19,37 +20,45 @@ const AddProduct = () => {
   const changeHandler = (e) => {
     setProductDetails({...productDetails,[e.target.name]:e.target.value})
   }
-
   const Add_Product = async () => {
     console.log(productDetails);
     let responseData;
     let product = productDetails;
     let formData = new FormData();
-    formData.append('product',image)
-
-    await fetch('http://localhost:4000/upload',{
-      method:'POST',
-      headers: {
-        Accept:'application/json',
-        'Content-Type': 'multipart/form-data',
-      },
-      body:formData,
-    }).then((resp) => resp.json()).then((data)=>{responseData=data});
-    if(responseData.success){
-      product.image = responseData.image_url;
-      console.log(product);
-      await fetch('http://localhost:4000/addproduct',{
-        method:'POST',
-        headerd:{
-          Accept:'application/json',
-          'Content-Type':'application/json' 
+    formData.append('product', image);
+  
+    try {
+      // Upload image
+      const uploadResponse = await axios.post('http://localhost:4000/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         },
-        body:JSON.stringify(product),
-      }).then((resp) => resp.json()).then((data) => {
-        data.succes?alert("Product added!"):alert("Failed")
-      })
+      });
+      responseData = uploadResponse.data;
+  
+      if (responseData.success) {
+        // Update product image URL
+        product.image = responseData.image_url;
+        console.log(product);
+  
+        // Add product
+        const addProductResponse = await axios.post('http://localhost:4000/addproduct', product, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (addProductResponse.data.success) {
+          alert("Product added!");
+        } else {
+          alert("Failed to add product");
+        }
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to upload image or add product");
     }
-  }
+  };
 
   return (
     <div className="add-product">
