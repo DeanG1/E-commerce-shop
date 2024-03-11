@@ -1,5 +1,6 @@
 import React,{useState} from 'react'
 import './CSS/LoginSignUp.css'
+import axios from 'axios';
 const Login = () => {
 
   const [state,setState] = useState("Login");
@@ -18,7 +19,7 @@ const Login = () => {
   const login = async () => {
     console.log("Login function executed!",formData)
   }
-  const signUp = async () => {
+  const signup = async () => {
     console.log("SignUp function executed!",formData)
     let responseData;
     await fetch('http://localhost:4000/signup',{
@@ -27,7 +28,7 @@ const Login = () => {
         Accept:'application/form-data',
         'Content-type':'application/json', 
       },
-      body: JSON.stringify(formData)
+      body: JSON.stringify(formData),
     })
     .then((response) => response.json()).then((data)=>responseData=data)
     if(responseData.success){
@@ -45,7 +46,7 @@ const Login = () => {
           <input name="email" value={formData.email} onChange={changeHandler} type="email" placeholder="Your email"/>
           <input name="password" value={formData.password} onChange={changeHandler} type="password" placeholder="Password"/>
         </div>
-        <button onClick={() => {state === "Login" ? login() : signUp()}}>Continue</button>
+        <button onClick={() => {state === "Login" ? login() : signup()}}>Continue</button>
         {state==="Sign Up" ?  <p className='loginsignup-login'>Already have an accound! <span onClick={() => {setState("Login")}}>Login here</span></p> : <p className='loginsignup-login'>Create an accound! <span onClick={() => {setState("Sign Up")}} >Click here</span></p>} 
         <div className="loginsingup-agree">
           <input type="checkbox" name='' id=''/>
