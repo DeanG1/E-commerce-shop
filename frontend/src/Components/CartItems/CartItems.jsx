@@ -18,10 +18,10 @@ const CartItems = () => {
         <p>Remove</p>
       </div>
       <hr />
-      {all_product.map((e) => {
+      {all_product.map((e,index) => {
         if (cartItems[e.id] > 0) {
           return(
-            <div>
+            <div  key={index}>
               <div className="cartitems-format cartitems-format-main">
                 <img src={e.image} alt="" className="carticon-product-icon" />
                 <p>{e.name}</p>
