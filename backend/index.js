@@ -42,11 +42,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 //Creating upload endpoint for images
-app.use('/images', express.static('upload/images'));
-app.post('/upload', upload.single('product'), (req, res) => {
+app.use("/images", express.static("upload/images"));
+app.post("/upload", upload.single("product"), (req, res) => {
   res.json({
     success: 1,
-    image_url: `http://localhost:${port}/images/${req.file.filename}`
+    image_url: `http://localhost:${port}/images/${req.file.filename}`,
   });
 });
 
@@ -108,7 +108,7 @@ app.post("/addproduct", async (req, res) => {
     id = last_product.id + 1;
   } else {
     id = 1;
-  } 
+  }
   //Create a new product
   const product = new Product({
     id: id,
@@ -145,42 +145,47 @@ app.post("/removeproduct", async (req, res) => {
 });
 
 // Creating API for getting all products
-app.get('/allproducts', async (req,res) => {
+app.get("/allproducts", async (req, res) => {
   let products = await Product.find({});
   console.log("All products fetched!");
   res.send(products);
-})
+});
 
 //Schema creating for User model
 
-const Users = mongoose.model('Users',{
-  name:{
-    type:String,
+const Users = mongoose.model("Users", {
+  name: {
+    type: String,
   },
-  email:{
-    type:String,
-    unique:true,
+  email: {
+    type: String,
+    unique: true,
   },
-  password:{
-    type:String,
+  password: {
+    type: String,
   },
-  cartDate:{
-    type:Object,
+  cartDate: {
+    type: Object,
   },
-  date:{
-    type:Date,
-    default:Date.now
-  }
-})
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
 //Creating API for user registration
-app.post('/signup',async (req,res) => {
-  let check = await Users.findOne({email:req.body.email});
-  if(check){
-    return res.status(400).json({success:false,errors:"existing user found with the same email address"})
+app.post("/signup", async (req, res) => {
+  let check = await Users.findOne({ email: req.body.email });
+  if (check) {
+    return res
+      .status(400)
+      .json({
+        success: false,
+        errors: "existing user found with the same email address",
+      });
   }
   let cart = {};
-  for(let i = 0; i < 300; i++){
+  for (let i = 0; i < 300; i++) {
     cart[i] = 0;
   }
   const user = new Users({
@@ -188,44 +193,52 @@ app.post('/signup',async (req,res) => {
     email: req.body.email,
     password: req.body.password,
     cartDate: cart,
-  })
+  });
   await user.save();
-  
+
   //Create token using this object
   const data = {
     user: {
-      id:user.id
-    }
-  }
+      id: user.id,
+    },
+  };
 
-  const token = jwt.sign(data,'sercret_ecom');
+  const token = jwt.sign(data, "sercret_ecom");
   //Send the response
-  res.json({success:true,token})
-})
+  res.json({ success: true, token });
+});
 
 //Creating endpoint user login
 
-app.post('/login', async (req,res) => {
-  let user = await Users.findOne({email:req.body.email});
-  if(user){
+app.post("/login", async (req, res) => {
+  let user = await Users.findOne({ email: req.body.email });
+  if (user) {
     const passCompare = req.body.password === user.password;
-    if(passCompare){
+    if (passCompare) {
       const data = {
-        user:{
-          id:user.id
-        }
-      }
-      const token = jwt.sign(data,'secret_ecom');
-      res.json({success:true, token});
+        user: {
+          id: user.id,
+        },
+      };
+      const token = jwt.sign(data, "secret_ecom");
+      res.json({ success: true, token });
+    } else {
+      res.json({ success: false, errors: "Wrong password!" });
     }
-    else{
-      res.json({success:false, errors:"Wrong password!"});
-    }
+  } else {
+    res.json({ success: false, errors: "Wrong email id!" });
   }
-  else{
-    res.json({success:false, errors:"Wrong email id!"})
-  }
-})
+});
+
+//Creating endpoint for newcollection data
+app.get("/newcollections", async (req, res) => {
+  //Get the last 8 products
+  let products = await Product.find({});
+  let newcollection = products.slice(1).slice(-8);
+  //Send the response
+  console.log("New Collection Fetched!");
+  res.send(newcollection);
+});
 
 app.listen(port, (error) => {
   if (!error) {
