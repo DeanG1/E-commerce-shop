@@ -10,13 +10,17 @@ const getDefaultCart = () =>{
     return cart
 }
 const ShopContextProvider = (props) => {
-    const [all_product,setAll_Product] = useState([]);
     const [cartItems,setCartItems] = useState(getDefaultCart());
 
-    useEffect(() => {
+    //Here we are going to implement the logic & functionality to fetch and render all products from MONGODB
+    //First we declare a const that will store all the products
+    const [all_product, setAll_Product] = useState([]);
+
+    //We will use useEffect to fetch the data from the API
+    useEffect(() =>{
         fetch('http://localhost:4000/allproducts')
         .then((response) => response.json())
-        .then((data)=>setAll_Product(data))
+        .then((data) => setAll_Product(data))
     },[])
 
     const addToCart = (itemId) => {
